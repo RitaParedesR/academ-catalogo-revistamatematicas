@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ACADEM — Catálogo de publicaciones</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FFFFFF;
+    --paper-raised:#F6F8FB;
+    --ink:#1B2433;
+    --ink-soft:#5B6270;
+    --hairline:#DCE1E9;
+    --accent:#003A70;
+    --shadow: 0 1px 2px rgba(32,36,46,0.06);
+
+    --c-matematica:#3457D5;
+    --c-tecnologia:#0B8793;
+    --c-estadistica:#7C3AED;
+    --c-economia:#D9622B;
+    --c-finanzas:#B8860B;
+    --c-salud:#D64545;
+    --c-politica:#57606F;
+    --c-educacion:#B23A6B;
+    --c-naturaleza:#2F9E44;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+  }
+  a{color:inherit;}
+
+  .wrap{
+    max-width:1120px;
+    margin:0 auto;
+    padding:0 24px 80px;
+  }
+
+  header.masthead{
+    padding:56px 24px 32px;
+    border-bottom:1px solid var(--hairline);
+    margin-bottom:40px;
+  }
+  .masthead-inner{
+    max-width:1120px;
+    margin:0 auto;
+  }
+  .eyebrow{
+    font-size:13px;
+    color:var(--ink-soft);
+    letter-spacing:0.02em;
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:'Source Serif 4', Georgia, serif;
+    font-weight:600;
+    font-size:clamp(32px, 5vw, 48px);
+    line-height:1.08;
+    margin:0 0 14px;
+    max-width:16ch;
+  }
+  .sub{
+    font-size:16px;
+    color:var(--ink-soft);
+    max-width:60ch;
+    line-height:1.55;
+    margin:0;
+  }
+  .sub strong{color:var(--ink); font-weight:600;}
+
+  /* category grid */
+  .cats-heading{
+    font-family:'Source Serif 4', Georgia, serif;
+    font-size:20px;
+    font-weight:600;
+    margin:0 0 18px;
+  }
+  .cat-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:12px;
+    margin-bottom:44px;
+  }
+  @media (max-width:760px){
+    .cat-grid{grid-template-columns:repeat(2,1fr);}
+  }
+  @media (max-width:460px){
+    .cat-grid{grid-template-columns:1fr;}
+  }
+  .cat-card{
+    --cc: var(--accent);
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding:16px 16px;
+    background:var(--paper-raised);
+    border:1px solid var(--hairline);
+    border-left:4px solid var(--cc);
+    border-radius:6px;
+    cursor:pointer;
+    text-align:left;
+    font-family:inherit;
+    color:var(--ink);
+    box-shadow:var(--shadow);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .cat-card:hover{ transform:translateY(-1px); }
+  .cat-card:focus-visible{ outline:2px solid var(--cc); outline-offset:2px; }
+  .cat-card.active{
+    background:var(--cc);
+    color:#fff;
+  }
+  .cat-card.active .cat-count{ color:rgba(255,255,255,0.85); }
+  .cat-icon{
+    font-size:24px;
+    width:40px;
+    height:40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+    background:color-mix(in srgb, var(--cc) 14%, transparent);
+    border-radius:8px;
+  }
+  .cat-card.active .cat-icon{
+    background:rgba(255,255,255,0.2);
+  }
+  .cat-name{
+    font-weight:600;
+    font-size:15px;
+    display:block;
+  }
+  .cat-count{
+    font-size:13px;
+    color:var(--ink-soft);
+    display:block;
+    margin-top:1px;
+  }
+
+  /* controls */
+  .controls{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:24px;
+    flex-wrap:wrap;
+  }
+  .search-box{
+    flex:1;
+    min-width:220px;
+    position:relative;
+  }
+  .search-box input{
+    width:100%;
+    padding:11px 14px 11px 38px;
+    border:1px solid var(--hairline);
+    border-radius:6px;
+    background:var(--paper-raised);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:14px;
+  }
+  .search-box input:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .search-box svg{
+    position:absolute;
+    left:12px;
+    top:50%;
+    transform:translateY(-50%);
+    opacity:0.45;
+    pointer-events:none;
+  }
+  .reset-btn{
+    padding:11px 16px;
+    border-radius:6px;
+    border:1px solid var(--hairline);
+    background:var(--paper-raised);
+    color:var(--ink);
+    font-family:inherit;
+    font-size:14px;
+    font-weight:500;
+    cursor:pointer;
+  }
+  .reset-btn:hover{ border-color:var(--accent); }
+
+  .results-line{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 16px;
+  }
+
+  /* article list */
+  .article-list{
+    display:flex;
+    flex-direction:column;
+  }
+  .article{
+    display:flex;
+    gap:16px;
+    padding:16px 0;
+    border-bottom:1px solid var(--hairline);
+    align-items:flex-start;
+  }
+  .article-num{
+    font-family:'Source Serif 4', Georgia, serif;
+    font-size:13px;
+    color:var(--ink-soft);
+    width:34px;
+    flex-shrink:0;
+    padding-top:2px;
+  }
+  .article-body{ flex:1; min-width:0; }
+  .article-title{
+    font-size:15.5px;
+    font-weight:600;
+    line-height:1.4;
+    margin:0 0 4px;
+  }
+  .article-authors{
+    font-size:13.5px;
+    color:var(--ink-soft);
+    margin:0 0 8px;
+  }
+  .tag{
+    display:inline-flex;
+    align-items:center;
+    gap:5px;
+    font-size:11.5px;
+    font-weight:600;
+    padding:3px 9px 3px 7px;
+    border-radius:100px;
+    background:color-mix(in srgb, var(--tc) 14%, transparent);
+    color:var(--tc);
+  }
+  .empty-state{
+    padding:60px 20px;
+    text-align:center;
+    color:var(--ink-soft);
+  }
+  .empty-state .big{
+    font-size:32px;
+    margin-bottom:10px;
+  }
+
+  footer{
+    margin-top:56px;
+    padding-top:20px;
+    border-top:1px solid var(--hairline);
+    font-size:12.5px;
+    color:var(--ink-soft);
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="eyebrow">AcademaEmpresa · Catálogo de publicaciones académicas</div>
+    <h1>ACADEM</h1>
+    <p class="sub">Catálogo de artículos de la Revista de Matemática de ESPOL: 230 publicaciones organizadas en <strong>9 áreas temáticas</strong>. Seleccione un área o busque por título o autor.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <h2 class="cats-heading">Categorías</h2>
+  <div class="cat-grid" id="catGrid"></div>
+
+  <div class="controls">
+    <div class="search-box">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M11.5 11.5L14.5 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <input type="text" id="searchInput" placeholder="Buscar por título o autor…">
+    </div>
+    <button class="reset-btn" id="resetBtn">Ver todas</button>
+  </div>
+
+  <p class="results-line" id="resultsLine"></p>
+  <div class="article-list" id="articleList"></div>
+
+  <footer>
+    ACADEM · AcademaEmpresa. Fuente: índice de la Revista de Matemática de ESPOL (revistas.espol.edu.ec). Clasificación temática según el área predominante de cada artículo.
+  </footer>
+</div>
+
+<script>
+const DATA = {"categories": [{"name": "Matemática", "icon": "📐"}, {"name": "Tecnología", "icon": "⚙️"}, {"name": "Estadística", "icon": "📊"}, {"name": "Economía", "icon": "📈"}, {"name": "Finanzas", "icon": "💰"}, {"name": "Salud", "icon": "🩺"}, {"name": "Política", "icon": "🏛️"}, {"name": "Educación", "icon": "🎓"}, {"name": "Naturaleza", "icon": "🌱"}], "articles": [{"title": "Análisis comparativo de regresión ortogonal como alternativa a la regresión ordinaria", "authors": "Colon Mario Celleri Mujica", "category": "Estadística"}, {"title": "Principios de mecánica newtoniana, parte cuarta", "authors": "Hernando Sánchez", "category": "Matemática"}, {"title": "Principios de mecánica newtoniana, parte quinta", "authors": "Hernando Sánchez", "category": "Matemática"}, {"title": "Inicios de una clasificación topológica de las aplicaciones reales cuadráticas del plano, parte 1", "authors": "Nelson Córdova", "category": "Matemática"}, {"title": "Aplicación de técnicas de análisis multivariado en el estudio del riesgo de siniestro asociado a las características de los vehículos en Quito", "authors": "Sandra García, Johnny Jiménez, Guillermo Ordóñez", "category": "Estadística"}, {"title": "Linealización de las ecuaciones de campo de Einstein", "authors": "Wilson Álvarez Samaniego, Borys Álvarez Samaniego, Douglas Moya Álvarez", "category": "Matemática"}, {"title": "Crecimiento, caracterización estructural y propiedades ópticas de CuGa0.8Mn0.2Se2", "authors": "Zulema Parra, Carlos Durante, Josefa Estevez, Jaime Castro, Zaida Duran", "category": "Tecnología"}, {"title": "Estudio estadístico de la percepción de los empleadores respecto a los graduados y profesionales de ESPOL", "authors": "Sandra García, Mario Solórzano, Verónica Ochoa, et al.", "category": "Educación"}, {"title": "Modelo de regresión logística aplicado a la probabilidad de fallecimiento de los hombres de la Comunidad Valenciana", "authors": "Wendy Plata, Karen Yambay", "category": "Salud"}, {"title": "Gestión de la logística en reversa: un enfoque de toma de decisiones bajo incertidumbre, basado en la teoría bayesiana", "authors": "Pedro Ramos De Santis", "category": "Tecnología"}, {"title": "El origen del método deductivo y algunos aportes de los griegos a la matemática de nuestros días", "authors": "Gabriela González, Miguel Vivas", "category": "Matemática"}, {"title": "Aplicación para la optimización del diseño de una red mallada de agua potable con un algoritmo genético", "authors": "Pedro Ramos De Santis, Johni Bustamante Romero", "category": "Tecnología"}, {"title": "Modelo numérico de elementos finitos para conducción de calor en placas perforadas de metal y carbono-carbono", "authors": "Wilfredo Angulo, Eligio Colmenares, Suárez Edemir", "category": "Tecnología"}, {"title": "Ecuación de Navier-Stokes unidimensional", "authors": "Edgar Bustamante, Gonzalo Riofrío, Ángel Acosta", "category": "Matemática"}, {"title": "Propiedades estructurales y térmicas del compuesto semiconductor In0,8Mn0,2Sb", "authors": "Eduardo Quintana, Larissa Duran, Josefa Esteves, et al.", "category": "Tecnología"}, {"title": "Modelos estadísticos para variables que inciden en la probabilidad de obtener empleo en Ecuador", "authors": "Sandra García, Andrés Plaza, Mónica Mite", "category": "Economía"}, {"title": "Principios de mecánica newtoniana, tercera parte", "authors": "Hernando Sánchez", "category": "Matemática"}, {"title": "Uniformly continuous superposition operators on spaces of functions of bounded variation", "authors": "Miguel Vivas", "category": "Matemática"}, {"title": "Revisión y aplicación del primer método para maximización del Bandwidth en sincronización de semáforos", "authors": "Xavier Cabezas, Sergio García, Erwin Delgado", "category": "Tecnología"}, {"title": "Cálculo de una cota superior para el problema de planificación de configuraciones de pistas de aeropuerto", "authors": "Xavier Cabezas, Erwin Delgado, Dalton Noboa", "category": "Tecnología"}, {"title": "Simulación de trayectorias de una plataforma serial robotizada de dos grados de libertad", "authors": "Washington Caraguay, Cecilia García", "category": "Tecnología"}, {"title": "Ondas dispersivas – Korteweg – De – Vries (KDV)", "authors": "Roberto Cascante, Carlos Martín", "category": "Matemática"}, {"title": "El trazador cúbico paramétrico cerrado y el cálculo de áreas", "authors": "Luis Rodríguez Ojeda", "category": "Matemática"}, {"title": "Método del gradiente de máximo descenso", "authors": "Luis Rodríguez Ojeda", "category": "Tecnología"}, {"title": "Principios de mecánica newtoniana, primera parte", "authors": "Hernando Sánchez", "category": "Matemática"}, {"title": "Principios de mecánica newtoniana, segunda parte", "authors": "Hernando Sánchez", "category": "Matemática"}, {"title": "Origen topológico de las distribuciones", "authors": "Soraya Solíz", "category": "Matemática"}, {"title": "Un modelo de optimización estocástica para el tamaño de flota de transporte terrestre para Galápagos", "authors": "Fernando Sandoya Sánchez", "category": "Tecnología"}, {"title": "Clasificación mediante máquinas de soporte vectorial", "authors": "John Ramírez, Miriam Ramos", "category": "Estadística"}, {"title": "Hemi-Parkinson's disease: differential alterations during tactile perception", "authors": "F. R. Loayza, M. A. Fernández Seara, et al.", "category": "Salud"}, {"title": "Pruebas de hipótesis aplicadas al control estadístico de procesos", "authors": "Miriam Ramos, Wendy Plata", "category": "Estadística"}, {"title": "¿Qué es el transporte óptimo?", "authors": "Jorge Salazar", "category": "Matemática"}, {"title": "Uncommonly behaved Lipschitz domains", "authors": "Jorge Salazar", "category": "Matemática"}, {"title": "Medidas perfectas y teorema de representación", "authors": "Soraya Solís", "category": "Matemática"}, {"title": "Sergei Sobolev, cálculo del siglo XX y las derivadas de funciones generalizadas", "authors": "Johni Bustamante, Ángel Acosta", "category": "Matemática"}, {"title": "En búsqueda de dinámicas de aplicaciones en el plano \"Iteraciones de funciones reales cuadráticas\"", "authors": "Nelson Córdova", "category": "Matemática"}, {"title": "La administración de cilindros de alta presión y su impacto en la atención a usuarios de gases de aire comprimido", "authors": "Jorge Fernández", "category": "Tecnología"}, {"title": "La trazabilidad de los gases para uso medicinal y su efecto en la eficiencia de la rotación de cilindros", "authors": "Jorge Fernández", "category": "Salud"}, {"title": "Correlación policórica en el análisis de factores con variables ordinales", "authors": "Miriam Ramos, Wendy Plata", "category": "Estadística"}, {"title": "Comprendiendo la relatividad especial de Einstein", "authors": "Manuel Álvarez, Peter Iza", "category": "Matemática"}, {"title": "Algunas propiedades de las derivadas de orden fraccionario", "authors": "Johni Bustamante", "category": "Matemática"}, {"title": "Regresión funcional mediante bases obtenidas por descomposición espectral del operador covarianza", "authors": "John Ramírez", "category": "Estadística"}, {"title": "Análisis de trayectorias y su simulación en MATLAB utilizando técnicas de interpolación lineal", "authors": "Pedro Ramos, Washington Caraguay", "category": "Tecnología"}, {"title": "Sobre la paradoja de Einstein–Podolsky–Rosen", "authors": "Eduardo Rivadeneira, Peter Iza", "category": "Matemática"}, {"title": "El problema de la mochila, complejidad, cotas y métodos de búsqueda eficientes", "authors": "Fernando Sandoya", "category": "Tecnología"}, {"title": "An infinite-series representation for functions in differentiability class", "authors": "Andrés Abad", "category": "Matemática"}, {"title": "Introducción al problema de valores iniciales y de frontera de la ecuación de Navier-Stokes", "authors": "Johni Bustamante", "category": "Matemática"}, {"title": "Definición de derivadas de orden fraccionario", "authors": "Johni Bustamante", "category": "Matemática"}, {"title": "Solución en R^n de la ecuación de onda", "authors": "Jorge Medina", "category": "Matemática"}, {"title": "Implementación de un algoritmo genético para el problema de programación de proyectos con recursos limitados", "authors": "Gabriela Narváez, Ramiro Saltos", "category": "Tecnología"}, {"title": "Diseño e implementación de un algoritmo GRASP para el problema de coloración de grafos", "authors": "Erwin Delgado", "category": "Tecnología"}, {"title": "Algoritmo GRASP para coloración de grafos aplicado a calendarización de exámenes", "authors": "Erwin Delgado", "category": "Tecnología"}, {"title": "Atenuación de rizado en la densidad espectral de potencia en una señal de ritmo cardiaco", "authors": "Javier González, Edwin Forero, Fabián Jiménez, Iván Mariño", "category": "Salud"}, {"title": "Construcción de Kernels y funciones de densidad de probabilidad", "authors": "Luís Rodríguez", "category": "Estadística"}, {"title": "Algoritmos factibles, problemas tratables y complejidad computacional del problema de diversidad máxima", "authors": "Fernando Sandoya", "category": "Tecnología"}, {"title": "Modelando el transporte de iones de potasio a través de un canal iónico de membrana celular", "authors": "Peter Iza", "category": "Salud"}, {"title": "Homotopía y continuación numérica en sistemas no lineales", "authors": "Carlos Martín", "category": "Matemática"}, {"title": "Sistemas no lineales y la metaheurística Scatter Search", "authors": "Carlos Martín", "category": "Tecnología"}, {"title": "Incorporando Brousseau en dos teoremas fundamentales: probabilidad total y Bayes", "authors": "Kyriakos Petakos", "category": "Estadística"}, {"title": "Diseño de muestra para conteo rápido", "authors": "Francisco Vera", "category": "Política"}, {"title": "Calendarización del campeonato ecuatoriano de fútbol profesional mediante programación entera", "authors": "Xavier Cabezas, Jorge Morales", "category": "Tecnología"}, {"title": "Manipulación del espectro de una función bidimensional para realce de defectos superficiales en piezas metálicas", "authors": "Javier González, Camilo Calvo, José Cruz, Jorge Tolosa", "category": "Tecnología"}, {"title": "Mecánica cuántica: postulados", "authors": "Peter Iza", "category": "Matemática"}, {"title": "Aplicación de algoritmos evolutivos a la búsqueda", "authors": "Carlos I. Jordán, Carlos J. Jordán", "category": "Tecnología"}, {"title": "Discretizing the Hopf–Hopf bifurcation", "authors": "Joseph Paez", "category": "Matemática"}, {"title": "Asymptotic distribution theory for contamination models", "authors": "David Dickey, James Lynch", "category": "Estadística"}, {"title": "Análisis estadístico de efectos ópticos en imágenes digitales", "authors": "Javier González, Camilo Calvo, José Cruz, Jorge Tolosa", "category": "Tecnología"}, {"title": "Scatter Search y la optimización funcional", "authors": "Carlos Martín", "category": "Tecnología"}, {"title": "Starting homoclinic tangencies near 1:1 resonances", "authors": "Joseph Páez", "category": "Matemática"}, {"title": "Una variante del problema de diversidad máxima para seleccionar equipos de trabajo eficientes", "authors": "Fernando Sandoya, Ricardo Aceves", "category": "Tecnología"}, {"title": "Optimización de una cadena de producción avícola utilizando programación matemática", "authors": "Fernando Sandoya, Washington Rodríguez", "category": "Naturaleza"}, {"title": "Estudio del caudal a través de modelos lineales generalizados dinámicos", "authors": "Dagoberto Bermúdez, Elmen D'Achiardi", "category": "Naturaleza"}, {"title": "Geostatistics with infinite dimensional data: cokriging and multivariable spatial prediction", "authors": "Ramón Giraldo, Pedro Delicado, Jorge Mateu", "category": "Estadística"}, {"title": "Optimización del despresado de cerdos mediante una matriz de rendimientos", "authors": "Fernando Sandoya, Jorge Duque, Santiago Nájera", "category": "Naturaleza"}, {"title": "Uso de árboles de decisión para la enseñanza de la estadística inferencial", "authors": "Carlos Valdivieso, Oscar Valdivieso, Roberto Valdivieso", "category": "Educación"}, {"title": "Técnicas de minería de datos aplicada a bases de datos imputadas. Un caso de estudio", "authors": "Oscar Vallejos, Maria Valesani, Enzo Rigonatto", "category": "Estadística"}, {"title": "Propuesta metodológica para el cálculo de los niveles socioeconómicos en Ecuador (ENEMDU 2009)", "authors": "Geovanny Chóez", "category": "Economía"}, {"title": "Aplicación del cálculo de la entropía en registros electroencefalográficos", "authors": "Javier Gonzáles, Carlos Granados, Hernán López, Iván Torres", "category": "Salud"}, {"title": "Estimadores robustos para el vector de medias y la matriz de varianzas y covarianzas", "authors": "Néstor Montaño, Gaudencio Zurita", "category": "Estadística"}, {"title": "Dynamical systems and differential equations", "authors": "Joseph Páez Chávez", "category": "Matemática"}, {"title": "Resolución exacta del modelo del máximo promedio para el problema de la dispersión máxima", "authors": "Fernando Sandoya", "category": "Tecnología"}, {"title": "Un algoritmo evolutivo para resolver el problema de calendarización para universidades", "authors": "Xavier Cabezas, Fernando Sandoya", "category": "Tecnología"}, {"title": "Propuesta de un modelo matemático para la secuenciación óptima de la cosecha de la caña de azúcar", "authors": "Rosa María Díaz, Irene Tisher", "category": "Naturaleza"}, {"title": "A short introduction to dynamical systems", "authors": "Joseph Páez Chávez", "category": "Matemática"}, {"title": "Diseño de un sistema de soporte de decisiones para el ruteo en un servicio de courier", "authors": "Johnny Pincay, James Tomalá, Polo Vaca", "category": "Tecnología"}, {"title": "Metaheurísticas para la optimización de la secuencia de producción y asignación de mano de obra en empresa manufacturera", "authors": "Fernando Sandoya, Vinicio Sevilla, Carlos Zurita", "category": "Tecnología"}, {"title": "Análisis matemático espacial y de frecuencia de muestras anatómicas sometidas a plastinación", "authors": "Cesar Aldana, Elías Buitrago, et al.", "category": "Salud"}, {"title": "Intervalos de confianza e intervalos de credibilidad para una proporción: estudio comparativo", "authors": "Víctor Cervantes, Iván Díaz, Diana Rodríguez, Edilberto Cepeda Cuervo", "category": "Estadística"}, {"title": "Diseño muestral estratificado basado en la utilidad de la información", "authors": "Marcelo Jijón-Salvador", "category": "Estadística"}, {"title": "Efecto de la dimensión, la distancia entre centroides y el sesgo en discriminación lineal para dos grupos", "authors": "César Serna", "category": "Estadística"}, {"title": "Análisis de factores de fin de la primera unión: el caso de mujeres canadienses", "authors": "Víctor Torres", "category": "Estadística"}, {"title": "Aplicación en DSP para modelamiento de sistemas dinámicos por técnicas de filtrado adaptativo", "authors": "Juan Calderón, Javier Gonzáles", "category": "Tecnología"}, {"title": "Regresión latente en modelos de respuesta al ítem logísticos de tres parámetros", "authors": "Edilberto Cepeda, Víctor Cervantes", "category": "Estadística"}, {"title": "Construcción y análisis no lineal de bases de datos de electrocardiogramas de felinos", "authors": "Leonardo Gómez, Javier Gonzáles, Rafael Gutiérrez, Mauricio Ortega", "category": "Salud"}, {"title": "Modelamiento para la identificación de síntomas relevantes a través de la programación entera", "authors": "Eddy Herrera Daza", "category": "Salud"}, {"title": "Modelamiento de la probabilidad de daño por viento en Pinus radiata en Chile: modelos logit", "authors": "Eduardo Navarrete, Alejandro Romero, Carolina Quila", "category": "Naturaleza"}, {"title": "Aplicaciones industriales de la función de pérdida de calidad de Taguchi multivariante", "authors": "Marcelo Jijón-Salvador", "category": "Tecnología"}, {"title": "Aplicación de la búsqueda tabú en el problema de las N-Reinas", "authors": "Johni Edgar Bustamante Romero", "category": "Tecnología"}, {"title": "Optimización de redes hidráulicas usando un algoritmo genético (instancia Alperovitz y Shamir 1977)", "authors": "Johni Edgar Bustamante Romero", "category": "Tecnología"}, {"title": "El problema de la recolección de desechos hospitalarios en Guayaquil: heurística basada en búsqueda tabú", "authors": "Erwin Delgado, Fernando Sandoya", "category": "Tecnología"}, {"title": "Determinación del perfil de profesores de ciencias y matemáticas de colegios urbanos de Guayas y Santa Elena", "authors": "Pablo Magallanes, Margarita Martínez", "category": "Educación"}, {"title": "La optimización en logística, la complejidad y el sentido común", "authors": "Fernando Sandoya", "category": "Tecnología"}, {"title": "Uso de la estadística en la medición de la seguridad alimentaria de los países", "authors": "Milena Agostinelli", "category": "Naturaleza"}, {"title": "Determinantes del spread de deuda soberana de mercados emergentes: modelo de regresión por cuantiles", "authors": "Johanna Fajardo González", "category": "Finanzas"}, {"title": "Análisis estadístico multivariado de factores en control y tratamiento de pacientes con asma bronquial (Hospital Militar de Guayaquil)", "authors": "Jorge Gómez Palacios, John Ramírez Figueroa", "category": "Salud"}, {"title": "Guía de implementación de un modelo de inteligencia de negocios para gestión de calidad en universidades peruanas", "authors": "Luis Alberto Otake Oyama", "category": "Educación"}, {"title": "Utilización de Eichhornia crassipes en la remoción de gases contaminantes en cultivo de Penaeus vannamei", "authors": "David E. Saldarriaga Yacila, Leocadio Malca Acuña", "category": "Naturaleza"}, {"title": "Proyección de ingresos tributarios a través de modelos de series temporales", "authors": "Jhonny Alcívar", "category": "Economía"}, {"title": "Aplicación de modelos estocásticos a la epidemiología: un ejemplo ilustrativo actual", "authors": "Michael Goedecke", "category": "Salud"}, {"title": "El problema de la compatibilidad de las distribuciones condicionadas", "authors": "Johni Bustamante, Javier Sánchez", "category": "Estadística"}, {"title": "Sobre la asignación del presupuesto en salud para terapia antirretroviral a personas con VIH/SIDA", "authors": "Mario Fernández", "category": "Salud"}, {"title": "Análisis del perfil de aspirantes a carreras profesionalistas aplicando aprendizaje no supervisado", "authors": "Paulino E. Mallo", "category": "Educación"}, {"title": "Conocimiento y aptitud escolástica como opción de ingreso a una institución de educación superior: el caso ESPOL", "authors": "Marianita Granda, Zurita Gaudencio", "category": "Educación"}, {"title": "La econometría espacial en la agricultura de precisión: aplicación en un ingenio azucarero", "authors": "Xavier Vitores, Fernando Sandoya", "category": "Naturaleza"}, {"title": "Desestacionalización de series económicas con X12-ARIMA: cuentas nacionales del Ecuador", "authors": "Vanessa Vásquez, Fernando Sandoya", "category": "Economía"}, {"title": "Uso de trazadores cúbicos en modelos actuariales de rentas vitalicias fraccionadas", "authors": "Fernando Sandoya", "category": "Finanzas"}, {"title": "Modelos bayesianos multivariados", "authors": "Fernando Sandoya", "category": "Estadística"}, {"title": "Equicorrelación multivariada", "authors": "Ricardo Leiva, Graciela Gei", "category": "Estadística"}, {"title": "Estabilidad de escenarios de equilibrio dinámico de la apertura comercial de Colombia, Perú y Ecuador", "authors": "Fernando Guerrero", "category": "Economía"}, {"title": "Modelo de detección de fraudes en seguros de vehículos utilizando componentes principales y análisis PRIDIT", "authors": "Heydi Roa, Fernando Sandoya", "category": "Finanzas"}, {"title": "Desarrollo de un modelo matemático para el cálculo actuarial de pagos periódicos fraccionados semestralmente", "authors": "Fernando Sandoya", "category": "Finanzas"}, {"title": "La Transformada Wavelet y los filtros paso-bajo paso-alto", "authors": "Fernando Sandoya", "category": "Tecnología"}, {"title": "Sistema de computación CEINCI: Espectro de capacidad espacial. Programa ESPACAP", "authors": "Roberto Aguiar", "category": "Tecnología"}, {"title": "Algoritmo de la minería de datos", "authors": "Juan Alvarado", "category": "Tecnología"}, {"title": "Definición de la derivada de orden fraccionario a partir del binomio de Newton", "authors": "Johnny Bustamante", "category": "Matemática"}, {"title": "Análisis del impacto de la educación formal de matemáticas en la actitud de la población adolescente de Guayas", "authors": "Mariuxi De La Cruz, Margarita Martínez", "category": "Educación"}, {"title": "Las matemáticas simples del equilibrio general", "authors": "Ramón Espinel", "category": "Economía"}, {"title": "Crítica a la teoría de mercados eficientes", "authors": "John Ramírez", "category": "Finanzas"}, {"title": "Perfil del estudiante de la ESPOL: el caso de las carreras autofinanciadas", "authors": "Sofía Ricaurte, Gaudencio Zurita", "category": "Educación"}, {"title": "El Continuo", "authors": "Juan Alvarado", "category": "Matemática"}, {"title": "Estudio estadístico de la incidencia de internet en la educación secundaria particular en Guayas", "authors": "Yessenia Carrill, Gaudencio Zurita", "category": "Educación"}, {"title": "Diseño de una hoja electrónica para el cálculo y análisis actuarial", "authors": "Eduardo Falcones, Fernando Sandoya", "category": "Finanzas"}, {"title": "Análisis dinámico del PIB considerando tendencia", "authors": "Fernando Guerrero", "category": "Economía"}, {"title": "La velocidad de circulación de dinero en el Ecuador", "authors": "Jose Moncayo, Manuel González", "category": "Economía"}, {"title": "Introducción a las series de tiempo fractales", "authors": "John Ramírez", "category": "Estadística"}, {"title": "Método directo de Ritz para determinar el mínimo de un funcional en Ha", "authors": "Eduardo Rivadeneira", "category": "Matemática"}, {"title": "La estadística en auxilio de la atención primaria de salud", "authors": "Hilario Rodríguez, Sandra Rodríguez", "category": "Salud"}, {"title": "Modelos ARCH y GARCH y su aplicación en la estimación de la volatilidad", "authors": "Fernando Sandoya", "category": "Finanzas"}, {"title": "Una heurística de tipo tabú para el problema de ruteo de vehículos con ventanas de tiempo suaves", "authors": "Fernando Sandoya", "category": "Tecnología"}, {"title": "Análisis estadístico del magisterio fiscal de la provincia del Guayas", "authors": "Eva Mera, Gaudencio Zurita", "category": "Educación"}, {"title": "Análisis estadístico del magisterio fiscal de la provincia de Los Ríos", "authors": "Zoila Merino, Gaudencio Zurita", "category": "Educación"}, {"title": "Análisis estadístico del magisterio fiscal de la provincia de Manabí", "authors": "Glenda Blanc, Gaudencio Zurita", "category": "Educación"}, {"title": "Análisis estadístico del magisterio fiscal de la provincia de Esmeraldas", "authors": "Grace Barragán, Gaudencio Zurita", "category": "Educación"}, {"title": "Análisis estadístico del magisterio fiscal de la provincia de El Oro", "authors": "Solange Cevallos, Gaudencio Zurita", "category": "Educación"}, {"title": "Geostadística en la clasificación de suelos para cultivos", "authors": "Mariela Gonzalez, César Guerrero", "category": "Naturaleza"}, {"title": "Tian's Invariant for Flag and Schubert manifolds in the Complex Grassmannian", "authors": "Riadh Jelloul", "category": "Matemática"}, {"title": "Existencia de solución de un sistema de ecuaciones elípticas", "authors": "Rubén Marcos Rojas Vargas, Hans Nina", "category": "Matemática"}, {"title": "A study on conformable fractional derivatives applied to Newton-Raphson method", "authors": "Esther Desireé Gutiérrez Moreno, Freddy Roberto Muñoz Solis, et al.", "category": "Matemática"}, {"title": "Optimal Control of the Fisher Equation: A Comparison of Steepest Descent and Quasi-Newton Methods", "authors": "Cristhian Alexander Núñez Ramos, Christian Humberto Pizanán Cárdenas", "category": "Tecnología"}, {"title": "Hopf tori and standard tori", "authors": "Leonardo A. Cano Garcia", "category": "Matemática"}, {"title": "On the Construction of Alexandroff Spaces", "authors": "Marcelo Isaac Mancero Mosquera, Angel Guale", "category": "Matemática"}, {"title": "Simulation of an optimal control of epidemiological model reservoir-people", "authors": "Cristhian Alexander Nuñez Ramos, Elisa Natalia Villacís Tulcán", "category": "Salud"}, {"title": "Métodos ARIMA estacional y Holt-Winters para previsión de la demanda eléctrica a ultra corto plazo", "authors": "Ian Oswaldo Anaguano Pérez, Fernando Francisco Sandoya Sánchez", "category": "Tecnología"}, {"title": "A generalization of the Zariouh's property (gaz) through local spectral theory", "authors": "Jhixon Macías García, Alexsander Jativa Macías, et al.", "category": "Matemática"}, {"title": "A Strongly Connected Topology on the Mersenne Numbers", "authors": "Jhixon Macias", "category": "Matemática"}, {"title": "Impact of the COVID-19 Pandemic on Sales Across Economic Sectors: A Canonical Biplot Analysis in Milagro, Ecuador", "authors": "Roberto William Cascante Yarlequé, Gabriela Bustos Chiliquinga", "category": "Economía"}, {"title": "A Gronwall inequality with singularities", "authors": "Soveny Soraya Solís García", "category": "Matemática"}, {"title": "Implementación de Support Vector Machine para el análisis de la incidencia del dengue", "authors": "José Daniel Díaz Pozo, Marcel Sebastián Lapierre Veintimilla", "category": "Salud"}, {"title": "Frail and strong solutions for a p-Laplace boundary problem with infinitely many discontinuities", "authors": "Juan Mayorga-Zambrano, Darwin Tallana-Chimarro", "category": "Matemática"}, {"title": "De la función Pr=2Nx+5 y el descarte del triángulo de generadores de compuestos a la generación de primos", "authors": "Alexander Villarroel Salazar, Francisco Villarroel Rosillo", "category": "Matemática"}, {"title": "Estimación de la función de Gompertz considerando correlación entre errores: COVID-19 y Biogás", "authors": "José Batún Cutz, Rubén Cool Padilla, et al.", "category": "Estadística"}, {"title": "Apollonius' problem using equations of tangent circles", "authors": "Fernando Gómez-Villarraga", "category": "Matemática"}, {"title": "Un vistazo a la mecánica estadística", "authors": "Byron Jiménez Oviedo, Jeremías Ramírez Jiménez", "category": "Matemática"}, {"title": "Transitividad de familias en la recta real con asíntotas horizontales y asíntota vertical", "authors": "Dimas Vera Pisco, Luis Ruiz Leal", "category": "Matemática"}, {"title": "Medidas ergódicas infinitas para transformaciones sobre R con una discontinuidad y asíntotas horizontales", "authors": "Miguel Mieles Bachicoria, Luis Ruiz Leal", "category": "Matemática"}, {"title": "Modelos Lineales Generalizados en el uso de desechos agroindustriales en enmiendas orgánicas", "authors": "Mariela González Narváez, Omar Ruiz Barzola, et al.", "category": "Naturaleza"}, {"title": "Concentración y desigualdades de tipo Poincaré para un proceso de Markov puro con salto degenerado", "authors": "Pierre Hodara, Ioannis Papageorgiou", "category": "Matemática"}, {"title": "Función de Green en una franja horizontal infinita con frontera mixta Dirichlet-Neumann", "authors": "Carlos Vélez Cantos, Carmen Vanegas Espinoza", "category": "Matemática"}, {"title": "Análisis crítico del coeficiente de determinación (R2) como indicador de calidad de modelos lineales y no lineales", "authors": "Roxanna Patricia Palma", "category": "Estadística"}, {"title": "Árboles de regresión para optimizar la imputación Hot Deck", "authors": "Lelly Useche Castro, Wilmer Barrera Yayes, et al.", "category": "Estadística"}, {"title": "Modelo cinético para remediación de suelos con desechos de petróleo mediante nanomateriales tipo andosol", "authors": "Edward Jiménez Calderón, Bryan Taco Changa", "category": "Naturaleza"}, {"title": "Interpretación geométrica de la ecuación del círculo en el plano complejo", "authors": "Fernando Gómez-Villarraga", "category": "Matemática"}, {"title": "Unos puntos interesantes: geometría algebraica y teoría de categorías", "authors": "Alejandro Martínez Méndez", "category": "Matemática"}, {"title": "Los fractales y sus aplicaciones. Revisión documental", "authors": "Luis Basurto Santos, Oswaldo Larreal Barreto", "category": "Matemática"}, {"title": "El Kernel de Poisson para un dominio doblemente conexo", "authors": "José Vergara Ibarra, Carmen Vanegas Espinoza", "category": "Matemática"}, {"title": "Función de Green vía mapeo conforme para el semiplano superior agrietado", "authors": "Ricardo Cedeño Delgado, Carmen Vanegas Espinoza", "category": "Matemática"}, {"title": "Modificación del método K-medias para modelar incertidumbre con datos NDVI de páramos del Ecuador", "authors": "Jeysson Chuquín Chuquín, Alexandra Maigua Castillo, et al.", "category": "Naturaleza"}, {"title": "Análisis de lactancia materna en bebés de comunidades Kichwas de Tena, Ecuador", "authors": "Andrés López Meza, Mariela González Narváez, et al.", "category": "Salud"}, {"title": "La certidumbre de la incertidumbre en los fraudes piramidales Ponzi", "authors": "Juan Mayorga Zambrano", "category": "Finanzas"}, {"title": "Incertidumbre en la evaluación del riesgo de una red de IoT", "authors": "Diego Heredia Diaz, Miguel Flores Sánchez, Roberto Andrade Paredes", "category": "Tecnología"}, {"title": "Determinación de la autocorrelación espacial: una aplicación epidemiológica", "authors": "Mario Célleri Mujica", "category": "Salud"}, {"title": "Incertidumbre en la predicción de la precipitación mediante modelos de regresión funcional", "authors": "Danilo Loza Quispillo, Ángel Llambo Delgado, et al.", "category": "Naturaleza"}, {"title": "Clasificación de canales bancarios por medio del análisis de conglomerados", "authors": "Miguel Buele Tejada", "category": "Finanzas"}, {"title": "Modelamiento de ecuaciones estructurales en torno a la resiliencia de estudiantes migratorios en Edomex (COVID-19)", "authors": "Cruz García Lirios, Javier Carreón Guillén, Jorge Hernández Valdés", "category": "Educación"}, {"title": "Usos de la estadística: una revisión de artículos recientes", "authors": "Isidro Amaro Martín", "category": "Estadística"}, {"title": "Pronóstico del rendimiento académico en ciencias exactas mediante regresión logística binaria", "authors": "Pedro Ramos De Santis", "category": "Educación"}, {"title": "Secciones cónicas tangentes a la gráfica de una función y sus derivadas", "authors": "Fernando Gómez-Villarraga", "category": "Matemática"}, {"title": "Modelo depredador-presa generalizado y su aplicación en juegos cooperativos en call centers", "authors": "Edward Jiménez Calderón, Ramiro Estrella Carrera", "category": "Tecnología"}, {"title": "Sobre los trapecios de cantidad de divisores, su relación con el triángulo de Pascal y problemas de conteo", "authors": "Alexander Villarroel Salazar, Francisco Villarroel Rosillo", "category": "Matemática"}, {"title": "Cálculos de splitting de separatrices para la aplicación microtrón", "authors": "Oswaldo Larreal Barreto", "category": "Matemática"}, {"title": "Proyecciones de la población de la provincia de Imbabura (Ecuador), 2011-2040", "authors": "Alicia Delgado Noboa", "category": "Política"}, {"title": "Math-odology: metodología para enseñar matemáticas y clases virtuales", "authors": "Priscila Cedillo, Wilson Valdez, Daniela Prado, Alexandra Bermeo", "category": "Educación"}, {"title": "Curvas de intensidad, duración y frecuencia de lluvias para la cuenca del río Rocafuerte", "authors": "Jorge Mendoza Cedeño, Antonio Campos Cedeño", "category": "Naturaleza"}, {"title": "Control estadístico de procesos en la fabricación de varillas de acero", "authors": "Karem Vélez Jiménez", "category": "Tecnología"}, {"title": "Modelación de COVID-19 en Ecuador", "authors": "Francisco Vera Alcivar", "category": "Salud"}, {"title": "Calidad de los censos tradicionales de población y vivienda: evaluación de sus etapas", "authors": "Jéssica Menéndez Campos, María Zambrano Zambrano", "category": "Política"}, {"title": "Construcción de un índice de riqueza utilizando componentes principales", "authors": "Eva Mera Intriago, Mario Solórzano Carvajal, Katherine Loor Valeriano", "category": "Economía"}, {"title": "Análisis multivariante: un recorrido por las técnicas de reducción de dimensiones", "authors": "Mariela González Narváez, Omar Ruiz Barzola, Ana Nieto Librero", "category": "Estadística"}, {"title": "Gráficos de control estadístico para variables Poisson y multinomial en contexto multivariado", "authors": "Sandra García Bustos, María Pastuizaca Fernández, Nora Monsalve Graterol", "category": "Estadística"}, {"title": "Técnica de descomposición modal de imágenes modificada S2 en fibras de pocos modos", "authors": "Erick A. Lamilla Rubio", "category": "Tecnología"}, {"title": "Aplicación del método de entropía cruzada al problema de optimización dinámica de surtido", "authors": "Jose M. Vera Aray", "category": "Tecnología"}, {"title": "Nuevo enfoque para la solución de la ecuación general de tercer grado en una variable", "authors": "Hernán E. Ayala Rocafuerte", "category": "Matemática"}, {"title": "Condiciones para obtener factorizaciones únicas en la categoría Rel(D#)", "authors": "David F. Méndez Oyuela", "category": "Matemática"}, {"title": "Enfoque teórico-matemático de los métodos de valoración contingente y de costo viaje", "authors": "Lizethe B. Méndez Heras, José G. Rivera Medina, Jenny E. Medina Alvarado", "category": "Economía"}, {"title": "Metodología para focalizar nuevos centros de atención para personas con discapacidad", "authors": "Gandy R. López Fuertes, Gustavo López, Iván C. Naula", "category": "Política"}, {"title": "Un nuevo esquema iterativo robusto y eficiente para un problema parabólico no lineal degenerado", "authors": "Guillermo A. Albuja Proaño, Iván C. Naula Reina", "category": "Matemática"}, {"title": "Extensiones autoadjuntas hamiltonianas en un intervalo de la recta real: el operador energía cinética", "authors": "Luis A. González-Díaz, Sttiwuer R. Díaz-Solórzano", "category": "Matemática"}, {"title": "Construcción de un perfil cuantitativo de alcaldes en una elección en Ecuador", "authors": "Wendy Chávez, Jessica M. Vera-Bermúdez, Omar Ruiz-Barzola", "category": "Política"}, {"title": "Creación de un paquete en R para gráficos de control multivariante con dimensión variable", "authors": "Jhonny Barahona, Mariela González-Narváez", "category": "Estadística"}, {"title": "Modelización econométrica mediante MCO para detección de factores determinantes del salario en Cuenca-Ecuador", "authors": "Guillermo A. Zambrano-Mohauad, Karen R. Ramirez-Alfonso, et al.", "category": "Economía"}, {"title": "Esquematización del problema de clasificación de conjuntos: la ecuación cuadrática de dos variables", "authors": "Jonathan Ortiz, Andres Merino", "category": "Matemática"}, {"title": "Ecuaciones funcionales lineales para funciones analíticas en el bicírculo. Uniformización, automorfismos", "authors": "Danilo Gortaire Játiva, Zverovich Edmund Ivanovich", "category": "Matemática"}, {"title": "Uniformización y automorfismos en la solución de una ecuación funcional en el bicírculo", "authors": "Danilo Gortaire Játiva", "category": "Matemática"}, {"title": "Condiciones para que un par de funciones tengan un único punto fijo (teoría del punto fijo)", "authors": "Igsil A. Dávila-Montenegro, Juan C. Yungán-Cazar", "category": "Matemática"}, {"title": "Solución para ecuaciones elípticas de segundo orden no homogéneas en álgebras de tipo Clifford", "authors": "Antonio Di Teodoro, Alexander López, Judith Vanegas", "category": "Matemática"}, {"title": "Comparación de esquemas implícitos para la ecuación de Richards unidimensional por volúmenes finitos", "authors": "Guillermo Albuja, Romel Pineda", "category": "Naturaleza"}, {"title": "Solución de una ecuación funcional mediante uniformización y pegamento con aplicación conforme", "authors": "Danilo Gortaire, Nelson Salgado", "category": "Matemática"}, {"title": "Teorema del punto fijo de Brouwer", "authors": "Jesús Medina Viloria, Miguel Vivas Cortez", "category": "Matemática"}, {"title": "Construcción de M-ondículas en R con soporte compacto, parte I", "authors": "Yenny Rangel, Miguel Vivas", "category": "Matemática"}, {"title": "Percepción y conocimiento sobre radiaciones ionizantes en pacientes del hospital Teodoro Maldonado", "authors": "Abad Victorino, Geovanny Alvarado, Hans Mautong, Susana Moyano", "category": "Salud"}, {"title": "Sobre un método para la construcción de núcleos de tipo Cauchy", "authors": "Ariza García Eusebio", "category": "Matemática"}, {"title": "Métodos numéricos para ecuaciones diferenciales ordinarias: un problema rígido en cinética química", "authors": "Luis Carrión, Edwin Haymacaña", "category": "Tecnología"}, {"title": "Comparación de dos modelos matemáticos para estimar casos de dengue en Guayas (Ross-Macdonald, Anderson-May)", "authors": "Gabriel Mantilla Saltos, Cristina Recalde, Raúl Mejía, Mercy Borbor Córdova", "category": "Salud"}, {"title": "Solución de un sistema infinito de ecuaciones lineales tipo Wiener-Hopf mediante uniformización", "authors": "Danilo Gortaire, Nelson Salgado", "category": "Matemática"}, {"title": "Análisis del método matemático de detección SVD en cognitive radio", "authors": "Pablo Palacios, Alberto Castro, Cesar Azurdia", "category": "Tecnología"}, {"title": "Modelado matemático vía simulación de la calidad del agua del sistema de abastecimiento de la UNL", "authors": "José Benavides, Jose Ochoa, Gonzalo Riofrio", "category": "Naturaleza"}, {"title": "Caracterización de álgebras de Clifford como anillos cocientes", "authors": "José Jatem, Judith Vanegas", "category": "Matemática"}, {"title": "Modelo de programación binaria a un modelo de programación no lineal con parámetro continuo", "authors": "Johni Bustamante, Alex Quito, Félix Pinto", "category": "Tecnología"}, {"title": "Las matemáticas, algunas aplicaciones y su importancia", "authors": "Miguel Vivas Cortez", "category": "Educación"}, {"title": "Diseño de un modelo para la distribución óptima de fertilizantes (transporte, estiba y desestiba)", "authors": "Alex Quito Cáceres", "category": "Naturaleza"}]};
+
+const catGrid = document.getElementById('catGrid');
+const articleList = document.getElementById('articleList');
+const resultsLine = document.getElementById('resultsLine');
+const searchInput = document.getElementById('searchInput');
+const resetBtn = document.getElementById('resetBtn');
+
+const slug = s => s.toLowerCase()
+  .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+  .replace(/\s+/g,'-');
+
+let activeCat = null;
+let query = '';
+
+function counts(){
+  const m = {};
+  DATA.articles.forEach(a => { m[a.category] = (m[a.category]||0)+1; });
+  return m;
+}
+
+function renderCats(){
+  const c = counts();
+  catGrid.innerHTML = '';
+  DATA.categories.forEach(cat => {
+    const btn = document.createElement('button');
+    btn.className = 'cat-card' + (activeCat === cat.name ? ' active' : '');
+    btn.style.setProperty('--cc', `var(--c-${slug(cat.name)})`);
+    btn.innerHTML = `
+      <span class="cat-icon">${cat.icon}</span>
+      <span>
+        <span class="cat-name">${cat.name}</span>
+        <span class="cat-count">${c[cat.name]||0} artículos</span>
+      </span>`;
+    btn.addEventListener('click', () => {
+      activeCat = (activeCat === cat.name) ? null : cat.name;
+      renderCats();
+      renderArticles();
+    });
+    catGrid.appendChild(btn);
+  });
+}
+
+function renderArticles(){
+  let list = DATA.articles;
+  if(activeCat) list = list.filter(a => a.category === activeCat);
+  if(query.trim()){
+    const q = query.trim().toLowerCase();
+    list = list.filter(a => a.title.toLowerCase().includes(q) || a.authors.toLowerCase().includes(q));
+  }
+
+  resultsLine.textContent = activeCat
+    ? `${list.length} artículo${list.length===1?'':'s'} en “${activeCat}”${query.trim() ? ` que coinciden con “${query.trim()}”` : ''}`
+    : `${list.length} artículo${list.length===1?'':'s'}${query.trim() ? ` que coinciden con “${query.trim()}”` : ' en total'}`;
+
+  articleList.innerHTML = '';
+  if(list.length === 0){
+    articleList.innerHTML = `<div class="empty-state"><div class="big">—</div>No se encontraron artículos con estos filtros.</div>`;
+    return;
+  }
+
+  list.forEach((a, i) => {
+    const catObj = DATA.categories.find(c => c.name === a.category);
+    const row = document.createElement('div');
+    row.className = 'article';
+    row.innerHTML = `
+      <div class="article-num">${String(i+1).padStart(2,'0')}</div>
+      <div class="article-body">
+        <p class="article-title">${a.title}</p>
+        <p class="article-authors">${a.authors}</p>
+        <span class="tag" style="--tc: var(--c-${slug(a.category)})">${catObj ? catObj.icon : ''} ${a.category}</span>
+      </div>`;
+    articleList.appendChild(row);
+  });
+}
+
+searchInput.addEventListener('input', (e) => {
+  query = e.target.value;
+  renderArticles();
+});
+resetBtn.addEventListener('click', () => {
+  activeCat = null;
+  query = '';
+  searchInput.value = '';
+  renderCats();
+  renderArticles();
+});
+
+renderCats();
+renderArticles();
+</script>
+</body>
+</html>

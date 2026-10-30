@@ -4,7 +4,7 @@ Catálogo web de la Revista de Matemática de ESPOL,
 organizados en 9 áreas: Matemática, Tecnología, Estadística, Economía,
 Finanzas, Salud, Política, Educación y Naturaleza.
 
-🔗 Ver el catálogo: []
+🔗 Ver el catálogo: [https://ritaparedesr.github.io/academ-catalogo-revistamatematicas/]
 
 ## Funciones
 - Filtro por área temática con íconos

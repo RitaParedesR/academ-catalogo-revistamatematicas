@@ -178,6 +178,12 @@
     opacity:0.45;
     pointer-events:none;
   }
+  .ac{position:absolute;left:0;right:0;top:calc(100% + 4px);max-height:260px;overflow-y:auto;background:var(--paper);border:1px solid var(--hairline);border-radius:6px;box-shadow:0 6px 18px rgba(32,36,46,0.14);z-index:30;padding:4px 0;}
+  .ac[hidden]{display:none;}
+  .ac-item{display:block;width:100%;text-align:left;padding:8px 14px;border:none;background:none;font-family:inherit;font-size:14px;color:var(--ink);cursor:pointer;}
+  .ac-item:hover,.ac-item.on{background:var(--paper-raised);color:var(--accent);}
+  .ac-item.cur{font-weight:600;color:var(--accent);}
+  .ac-empty{padding:8px 14px;font-size:13px;color:var(--ink-soft);}
   .reset-btn{
     padding:11px 16px;
     border-radius:6px;
@@ -296,7 +302,7 @@
     <div class="search-box">
       <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.4"/><path d="M11.5 11.5L14.5 14.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       <input type="text" id="searchInput" placeholder="Buscar por título, autor, año o tema…" autocomplete="off">
-      <datalist id="authorOpts"></datalist>
+      <div class="ac" id="acList" role="listbox" hidden></div>
     </div>
     <select class="sel" id="modeSel" aria-label="Buscar en">
       <option value="all">Buscar en: todo</option>
@@ -330,7 +336,7 @@ const AUTHORS = ["Abad Victorino", "Alberto Castro", "Alejandro Martínez Ménde
 const $ = id => document.getElementById(id);
 const catGrid=$('catGrid'), articleList=$('articleList'), resultsLine=$('resultsLine'),
       searchInput=$('searchInput'), resetBtn=$('resetBtn'), yearSel=$('yearSel'),
-      sortSel=$('sortSel'), modeSel=$('modeSel'), filtersBar=$('filtersBar'), authorOpts=$('authorOpts');
+      sortSel=$('sortSel'), modeSel=$('modeSel'), filtersBar=$('filtersBar'), acList=$('acList');
 
 const norm = s => String(s).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 const slug = s => norm(s).replace(/ /g,'-');
@@ -345,7 +351,6 @@ DATA.articles.forEach(a => {
 
 let activeCat=null, yearFilter='', sortMode='new', query='', mode='all', authorFilter=null;
 
-AUTHORS.forEach(n => { const o=document.createElement('option'); o.value=n; authorOpts.appendChild(o); });
 [...new Set(DATA.articles.map(a=>a.year))].sort((a,b)=>b-a).forEach(y => {
   const o=document.createElement('option'); o.value=y; o.textContent=y; yearSel.appendChild(o);
 });
@@ -430,14 +435,49 @@ articleList.addEventListener('click',e=>{
   const b=e.target.closest('.au'); if(!b) return;
   authorFilter=b.dataset.au; renderArticles(); window.scrollTo({top:document.querySelector('.controls').offsetTop-20,behavior:'smooth'});
 });
-const PH={all:'Buscar por título, autor, año o tema…',title:'Buscar por título…',author:'Escriba el nombre de un autor…',year:'Escriba un año (por ejemplo 2018)…',topic:'Escriba un tema o área (por ejemplo salud)…'};
-modeSel.addEventListener('change',e=>{ mode=e.target.value; searchInput.placeholder=PH[mode]; if(mode==='author') searchInput.setAttribute('list','authorOpts'); else searchInput.removeAttribute('list'); renderArticles(); });
-searchInput.addEventListener('input',e=>{ query=e.target.value; renderArticles(); });
+
+/* Autocompletado de autores (siempre muestra todos al enfocar, aunque haya texto) */
+let acIdx=-1, acItems=[];
+function acOpen(){
+  if(mode!=='author'){ acClose(); return; }
+  const q=norm(query);
+  acItems = q ? AUTHORS.filter(n=>q.split(' ').every(t=>norm(n).includes(t))) : AUTHORS;
+  acIdx=-1;
+  acList.innerHTML = acItems.length
+    ? acItems.map((n,i)=>`<button type="button" class="ac-item${n===authorFilter?' cur':''}" role="option" data-i="${i}">${esc(n)}</button>`).join('')
+    : '<div class="ac-empty">Sin coincidencias</div>';
+  acList.hidden=false;
+}
+function acClose(){ acList.hidden=true; acIdx=-1; }
+function acPick(name){
+  authorFilter=name; query=''; searchInput.value='';
+  acClose(); renderArticles(); searchInput.focus();
+}
+function acMove(d){
+  const els=[...acList.querySelectorAll('.ac-item')]; if(!els.length) return;
+  acIdx=(acIdx+d+els.length)%els.length;
+  els.forEach((el,i)=>el.classList.toggle('on',i===acIdx));
+  els[acIdx].scrollIntoView({block:'nearest'});
+}
+acList.addEventListener('mousedown',e=>{ e.preventDefault(); const b=e.target.closest('.ac-item'); if(b) acPick(acItems[+b.dataset.i]); });
+searchInput.addEventListener('focus',acOpen);
+searchInput.addEventListener('click',acOpen);
+searchInput.addEventListener('blur',acClose);
+searchInput.addEventListener('keydown',e=>{
+  if(mode!=='author') return;
+  if(e.key==='ArrowDown'){ e.preventDefault(); if(acList.hidden) acOpen(); acMove(1); }
+  else if(e.key==='ArrowUp'){ e.preventDefault(); acMove(-1); }
+  else if(e.key==='Enter' && acIdx>=0){ e.preventDefault(); acPick(acItems[acIdx]); }
+  else if(e.key==='Escape'){ acClose(); }
+});
+const PH={all:'Buscar por título, autor, año o tema…',title:'Buscar por título…',author:'Escriba o elija un autor…',year:'Escriba un año (por ejemplo 2018)…',topic:'Escriba un tema o área (por ejemplo salud)…'};
+modeSel.addEventListener('change',e=>{ mode=e.target.value; searchInput.placeholder=PH[mode]; acClose(); renderArticles(); });
+searchInput.addEventListener('input',e=>{ query=e.target.value; renderArticles(); acOpen(); });
 yearSel.addEventListener('change',e=>{ yearFilter=e.target.value; renderArticles(); });
 sortSel.addEventListener('change',e=>{ sortMode=e.target.value; renderArticles(); });
 resetBtn.addEventListener('click',()=>{
   activeCat=null; yearFilter=''; sortMode='new'; query=''; mode='all'; authorFilter=null;
-  searchInput.value=''; yearSel.value=''; sortSel.value='new'; modeSel.value='all'; searchInput.placeholder=PH.all; searchInput.removeAttribute('list');
+  searchInput.value=''; yearSel.value=''; sortSel.value='new'; modeSel.value='all'; searchInput.placeholder=PH.all; acClose();
   renderCats(); renderArticles();
 });
 renderCats(); renderArticles();
